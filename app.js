@@ -38,16 +38,90 @@ let tasks = [
     accum[task._id] = task
     return accum 
   }, {})
+
+  const themes = {
+    default: {
+      '--base-text-color': 'black',
+      '--base-bg-img': 'url(\'images/default_theme_bg.jpg\') center center/cover no-repeat',
+      '--header-bg': '#007bff',
+      '--header-text-color': '#fff',
+      '--default-btn-bg': '#007bff',
+      '--default-btn-text-color': '#fff',
+      '--default-btn-hover-bg': '#0069d9',
+      '--default-btn-border-color': '#0069d9',
+      '--danger-btn-bg': '#dc3545',
+      '--danger-btn-text-color': '#fff',
+      '--danger-btn-hover-bg': '#bd2130',
+      '--danger-btn-border-color': '#dc3545',
+      '--input-border-color': '#ced4da',
+      '--input-bg-color': '#fff',
+      '--input-text-color': '#495057',
+      '--input-focus-bg-color': '#fff',
+      '--input-focus-text-color': '#495057',
+      '--input-focus-border-color': '#80bdff',
+      '--input-focus-box-shadow': '0 0 0 0.2rem rgba(0, 123, 255, 0.25)',
+    },
+    dark: {
+      '--base-text-color': '#fff',
+      '--header-bg': '#343a40',
+      '--base-bg-img': 'url(\'images/darck_theme_bg2.jpg\') center center/cover no-repeat',
+      '--header-text-color': '#fff',
+      '--default-btn-bg': '#58616b',
+      '--default-btn-text-color': '#fff',
+      '--default-btn-hover-bg': '#292d31',
+      '--default-btn-border-color': '#343a40',
+      '--default-btn-focus-box-shadow':
+        '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+      '--danger-btn-bg': '#b52d3a',
+      '--danger-btn-text-color': '#fff',
+      '--danger-btn-hover-bg': '#88222c',
+      '--danger-btn-border-color': '#88222c',
+      '--input-bg-color': '#fff',
+      '--input-focus-bg-color': '#fff',
+      '--input-focus-border-color': '#78818a',
+      '--input-focus-box-shadow': '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+    },
+    light: {
+      '--header-bg': '#fff',
+      '--base-bg-img': 'url(\'images/light_theme_bg2.jpg\') center center/cover no-repeat',
+      '--header-text-color': '#212529',
+      '--default-btn-bg': '#fff',
+      '--default-btn-text-color': '#212529',
+      '--default-btn-hover-bg': '#e8e7e7',
+      '--default-btn-border-color': '#343a40',
+      '--default-btn-focus-box-shadow':
+        '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+      '--danger-btn-bg': '#f1b5bb',
+      '--danger-btn-text-color': '#212529',
+      '--danger-btn-hover-bg': '#ef808a',
+      '--danger-btn-border-color': '#e2818a',
+      '--input-bg-color': '#fff',
+      '--input-focus-bg-color': '#fff',
+      '--input-focus-border-color': '#78818a',
+      '--input-focus-box-shadow': '0 0 0 0.2rem rgba(141, 143, 146, 0.25)',
+    },
+  };
+
+  let lastSelectedTheme = localStorage.getItem('selectedTheme') || 'default'
   
+
   //Nod elements
   const listContainer = document.querySelector('.tasks-list-section .list-group')
   const form = document.forms['addTask']
   const inputTitle = form.elements['title']
   const inputBody = form.elements['body']
+  const themeSelect = document.getElementById('themeSelect')
+
 
   form.addEventListener('submit', submitHandler)
 
   listContainer.addEventListener('click', deleteHandler)
+  themeSelect.addEventListener('change', onThemeSelect)
+
+  if(localStorage.getItem('selectedTheme')) {
+    themeSelect.value = localStorage.getItem('selectedTheme')
+    setTheme(localStorage.getItem('selectedTheme'))
+  }
   
 
 
@@ -151,6 +225,27 @@ let tasks = [
       deleteTaskFromHtml(confirmed, taskParent)
  
     }
+  }
+
+  function onThemeSelect(event){
+    let selectedTheme = themeSelect.value
+    const isConfirmed = confirm(`Барин действительно желает тему ${ selectedTheme } установить?`)
+    if(!isConfirmed) {
+      themeSelect.value = lastSelectedTheme
+      return}
+
+    lastSelectedTheme = selectedTheme
+    localStorage.setItem('selectedTheme', themeSelect.value)
+    setTheme(selectedTheme)
+
+  }
+
+  function setTheme(themeName){
+
+    const selectedThemesObj = themes[themeName]
+    Object.entries(selectedThemesObj).forEach(([key, value]) => {  //Object.entries преобразует обьект в массив с данными вида ключ значение, дальше уже работаем как с массивом
+      document.documentElement.style.setProperty(key, value)
+    })
   }
 
 })(tasks);
